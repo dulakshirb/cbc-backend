@@ -1,7 +1,19 @@
 import Product from "../models/product.js";
 
-export function createProduct(req, res) {
+export async function getProducts(req, res) {
+  try {
+    const productList = await Product.find();
+    res.json({
+      list: productList,
+    });
+  } catch (e) {
+    res.json({
+      message: "Error",
+    });
+  }
+}
 
+export function createProduct(req, res) {
   //   Authentication
   if (req.user == null) {
     res.json({
