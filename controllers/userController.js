@@ -45,7 +45,7 @@ export function loginUser(req, res) {
             type: user.type,
             profilePicture: user.profilePicture,
           },
-          "cbc-secret-key-1234"
+          process.env.SECRET
         );
 
         res.json({
