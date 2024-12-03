@@ -7,7 +7,6 @@ export function createUser(req, res) {
 
   // Verify admin before create admin account
   if (newUserData.type == "admin") {
-
     if (req.user == null) {
       res.json({
         message: "Please login as administrator to create admin accounts.",
@@ -17,8 +16,8 @@ export function createUser(req, res) {
 
     if (req.user.type != "admin") {
       res.json({
-        message: "Please login as administrator to create admin accounts."
-      })
+        message: "Please login as administrator to create admin accounts.",
+      });
       return;
     }
   }
@@ -78,6 +77,30 @@ export function loginUser(req, res) {
       }
     }
   });
+}
+
+export function isAdmin(req) {
+  if (req.user == null) {
+    return false;
+  }
+
+  if (req.user != "admin") {
+    return false;
+  }
+
+  return true;
+}
+
+export function isCustomer(req) {
+  if (req.user == null) {
+    return false;
+  }
+
+  if (req.user != " customer") {
+    return false;
+  }
+
+  return true;
 }
 
 export function deleteUser(req, res) {
