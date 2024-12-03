@@ -6,6 +6,7 @@ export function createProduct(req, res) {
     res.json({
       message: "Please login as administrator to add products.",
     });
+    return;
   }
 
   const newProductData = req.body;

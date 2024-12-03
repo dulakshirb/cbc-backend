@@ -84,7 +84,7 @@ export function isAdmin(req) {
     return false;
   }
 
-  if (req.user != "admin") {
+  if (req.user.type != "admin") {
     return false;
   }
 
@@ -96,7 +96,7 @@ export function isCustomer(req) {
     return false;
   }
 
-  if (req.user != " customer") {
+  if (req.user.type != "customer") {
     return false;
   }
 
