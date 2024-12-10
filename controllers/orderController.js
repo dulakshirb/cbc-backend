@@ -1,4 +1,5 @@
 import Order from "../models/order.js";
+import Product from "../models/product.js";
 import { isCustomer } from "./userController.js";
 
 export async function createOrder(req, res) {
@@ -8,8 +9,8 @@ export async function createOrder(req, res) {
     });
   }
 
-  //take the lastest order ID
   try {
+    //take the lastest order ID
     const latestOrder = await Order.find().sort({ date: -1 }).limit(1);
 
     let orderId;
@@ -24,6 +25,38 @@ export async function createOrder(req, res) {
     }
 
     const newOrderData = req.body;
+
+    const orderedItemsProductData = [];
+
+    for (let i = 0; i < newOrderData.orderedItems.length; i++) {
+      //console.log(newOrderData.orderedItems[i]);
+
+      const product = await Product.findOne({
+        productId: newOrderData.orderedItems[i].productId,
+      });
+
+      if (product == null) {
+        res.json({
+          message:
+            "Product with ID " +
+            newOrderData.orderedItems[i].productId +
+            " not found.",
+        });
+        return;
+      }
+
+      orderedItemsProductData[i] = {
+        productId: product.productId,
+        name: product.productName,
+        price: product.lastPrice,
+        quantity: newOrderData.orderedItems[i].quantity,
+        image: product.images[0],
+      };
+    }
+    //console.log(orderedItemsProductData);
+
+    newOrderData.orderedItems = orderedItemsProductData;
+
     newOrderData.orderId = orderId;
     newOrderData.email = req.user.email;
 
@@ -43,7 +76,7 @@ export async function createOrder(req, res) {
 
 export async function getAllOrders(req, res) {
   try {
-    const orders = await Order.find({email:req.user.email});
+    const orders = await Order.find({ email: req.user.email });
     res.json({
       list: orders,
     });
