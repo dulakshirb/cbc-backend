@@ -26,11 +26,21 @@ export async function createOrder(req, res) {
 
     const newOrderData = req.body;
 
+    if (
+      !Array.isArray(newOrderData.orderedItems) ||
+      newOrderData.orderedItems.length === 0
+    ) {
+      return res.status(400).json({
+        message: "Invalid or missing ordered items.",
+      });
+    }
+
     const orderedItemsProductData = [];
 
     for (let i = 0; i < newOrderData.orderedItems.length; i++) {
       //console.log(newOrderData.orderedItems[i]);
 
+      //fetch the product
       const product = await Product.findOne({
         productId: newOrderData.orderedItems[i].productId,
       });
@@ -45,6 +55,23 @@ export async function createOrder(req, res) {
         return;
       }
 
+      //check stock availablity of the product
+      if (product.stock < newOrderData.orderedItems[i].quantity) {
+        res.json({
+          message:
+            "Product with ID " +
+            newOrderData.orderedItems[i].productId +
+            " is out of stock.",
+        });
+        return;
+      }
+
+      //update stock of the product
+      product.stock -= newOrderData.orderedItems[i].quantity;
+      console.log(product.stock);
+      await product.updateOne({ stock: product.stock });
+
+      //add the product to the order
       orderedItemsProductData[i] = {
         productId: product.productId,
         name: product.productName,
@@ -53,7 +80,6 @@ export async function createOrder(req, res) {
         image: product.images[0],
       };
     }
-    //console.log(orderedItemsProductData);
 
     newOrderData.orderedItems = orderedItemsProductData;
 
