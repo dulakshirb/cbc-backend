@@ -37,7 +37,7 @@ export function getProducts(req, res) {
     });
 }
 
-export function deleteProduct(q, res) {
+export function deleteProduct(req, res) {
   if (!isAdmin(req)) {
     res.status(403).json({
       message: "Please login as administrator to delete products"
